@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "accfix"
+version = "0.1.0"
+description = "EPUB accessibility fixer"
+authors = ["Titusz <tp@py7.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
