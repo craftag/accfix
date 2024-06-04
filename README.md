@@ -1,1 +1,1 @@
-# accfix - EPUB accessibility fixer
+# accfix -  Automated accessibility fixes for EPUB

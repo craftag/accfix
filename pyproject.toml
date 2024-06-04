@@ -1,12 +1,18 @@
 [tool.poetry]
 name = "accfix"
 version = "0.1.0"
-description = "EPUB accessibility fixer"
+description = "Automated accessibility fixes for EPUB"
 authors = ["Titusz <tp@py7.de>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+lxml = "^5.2.2"
+lingua-language-detector = "^2.0.2"
+streamlit = "^1.35.0"
+loguru = "^0.7.2"
+ansi2html = "^1.9.1"
+fsspec = "^2024.6.0"
 
 
 [tool.poetry.group.dev.dependencies]
