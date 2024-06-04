@@ -24,7 +24,7 @@ class Epub:
             temp_dir = tempfile.mkdtemp()
             self._clone = Path(temp_dir) / self._path.name
             shutil.copy2(self._path, self._clone)
-            log.debug(f"Cloning EPUB file to: {self._clone.parent}")
+            log.debug("Cloning EPUB file to: {}".format(self._clone.parent))
         self._fs = fsspec.filesystem("zip", fo=str(self._clone if self._clone else self._path))
 
     def __repr__(self):
