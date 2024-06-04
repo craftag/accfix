@@ -18,7 +18,7 @@ class Epub:
         """
         self._path = Path(path)
         self.name = self._path.name
-        log.debug(f"Opening EPUB file: {self._path.name}")
+        log.debug("Opening EPUB file: {}".format(self._path.name))
         self._clone = None
         if clone:
             temp_dir = tempfile.mkdtemp()
