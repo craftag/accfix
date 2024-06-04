@@ -30,7 +30,18 @@ class Epub:
     def __repr__(self):
         return f'Epub("{self._path.name}")'
 
-    def read(self, path, mode="rb"):
+    def write(self, path, content, mode="wb"):
+        # type: (str|Path, str|bytes, str) -> None
+        """Write content to a file within the EPUB.
+
+        :param path: The relative path of the file within the EPUB.
+        :param content: The content to write to the file.
+        :param mode: The mode to open the file.
+        """
+        path = Path(path)
+        log.debug(f"Writing to: {self.name}/{path}")
+        with self._fs.open(path.as_posix(), mode=mode) as file:
+            file.write(content)
         # type: (str|Path, str) -> str | bytes
         """Read the content of a file from the EPUB.
 
