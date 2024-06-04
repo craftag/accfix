@@ -19,8 +19,9 @@ class Epub:
         """
         self._path = Path(path)
         self._clone = None
-        self._fs = fsspec.filesystem('zip', fo=str(self._clone if self._clone else self._path))
+        if clone:
             temp_dir = tempfile.mkdtemp()
             self._clone = Path(temp_dir) / self._path.name
             shutil.copy2(self._path, self._clone)
+        self._fs = fsspec.filesystem('zip', fo=str(self._clone if self._clone else self._path))
 
