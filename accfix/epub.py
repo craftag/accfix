@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import fsspec
+from accfix.zfile import ZipFileR
 
 
 class Epub:
@@ -26,7 +27,9 @@ class Epub:
             self._clone = Path(temp_dir) / self._path.name
             shutil.copy2(self._path, self._clone)
             log.debug(f"Cloning EPUB file to: {self._clone.parent}")
-        self._fs = fsspec.filesystem("zip", fo=str(self._clone if self._clone else self._path))
+        self._fs = fsspec.filesystem(
+            "zip", fo=str(self._clone.as_posix() if self._clone.as_posix() else self._path)
+        )
 
     def __repr__(self):
         return f'Epub("{self._path.name}")'
@@ -48,7 +51,7 @@ class Epub:
         # type: (str|Path, str|bytes, str) -> None
         """Write data to a file in the EPUB.
 
-        :param path: The relative path of the file within the EPUB. 
+        :param path: The relative path of the file within the EPUB.
         :param data: The data to write to the file.
         :param mode: The mode to open the file.
         """
@@ -60,10 +63,12 @@ class Epub:
 
 if __name__ == "__main__":
     epb = Epub("../scratch/test1.epub")
-    print(epb.read("mimetype"))
-    c = epb.read("OEBPS/cover.xhtml")
-    print(type(c))
-    c = epb.read("OEBPS/images/cover.jpg")
-    print(type(c))
-    c = epb.read(Path("OEBPS/images/cover.jpg"))
-    print(type(c))
+    mtc = epb.read("mimetype")
+    print(mtc)
+    # epb.write("mimetype", mtc)
+    # c = epb.read("OEBPS/cover.xhtml")
+    # print(type(c))
+    # c = epb.read("OEBPS/images/cover.jpg")
+    # print(type(c))
+    # c = epb.read(Path("OEBPS/images/cover.jpg"))
+    # print(type(c))
