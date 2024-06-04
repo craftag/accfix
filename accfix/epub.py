@@ -1,6 +1,7 @@
 """Module for handling EPUB files"""
 
 from pathlib import Path
+from typing import Union
 import shutil
 import tempfile
 
@@ -9,7 +10,7 @@ import fsspec
 
 class Epub:
     def __init__(self, path, clone=True):
-        # type: (str|Path, bool) -> Epub
+        # type: (Union[str, Path], bool) -> Epub
         """Opens a EPUB file for reading and writing.
 
         Wraps the epub file in a fsspec zip filesystem for easy access.
