@@ -1,4 +1,5 @@
 """Module for handling EPUB files"""
+
 from loguru import logger as log
 from pathlib import Path
 import shutil
@@ -44,7 +45,7 @@ class Epub:
             return file.read()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     epb = Epub("../scratch/test1.epub")
     print(epb.read("mimetype"))
     c = epb.read("OEBPS/cover.xhtml")
@@ -53,4 +54,3 @@ if __name__ == '__main__':
     print(type(c))
     c = epb.read(Path("OEBPS/images/cover.jpg"))
     print(type(c))
-
