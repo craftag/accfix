@@ -44,6 +44,19 @@ class Epub:
         with self._fs.open(path.as_posix(), mode=mode) as file:
             return file.read()
 
+    def write(self, path, data, mode="wb"):
+        # type: (str|Path, str|bytes, str) -> None
+        """Write data to a file in the EPUB.
+
+        :param path: The relative path of the file within the EPUB. 
+        :param data: The data to write to the file.
+        :param mode: The mode to open the file.
+        """
+        path = Path(path)
+        log.debug(f"Writing: {self.name}/{path}")
+        with self._fs.open(path.as_posix(), mode=mode) as file:
+            file.write(data)
+
 
 if __name__ == "__main__":
     epb = Epub("../scratch/test1.epub")
