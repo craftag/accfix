@@ -27,7 +27,7 @@ class Epub:
         self._fs = fsspec.filesystem("zip", fo=str(self._clone if self._clone else self._path))
 
     def __repr__(self):
-        return f"Epub('{self._path.name}')"
+        return "Epub('{}')".format(self._path.name)
 
     def read(self, epub_relative_path):
         """Read the content of a file from the EPUB.
