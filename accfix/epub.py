@@ -12,7 +12,7 @@ from lxml import etree
 
 class Epub:
     def __init__(self, path, clone=True):
-        # type: (str|Path, bool) -> Epub
+        # type: (str|Path, bool) -> None
         """EPUB file object for reading and writing members.
 
         :param path: Path to the EPUB file.
