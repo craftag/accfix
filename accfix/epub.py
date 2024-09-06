@@ -33,6 +33,9 @@ class Epub:
     def __repr__(self):
         return f'Epub("{self._path.name}")'
 
+    def path(self) -> Path:
+        return self._clone or self._path
+
     @cache
     def opf_path(self) -> Path:
         """Determine OPF-File path within epub archive"""
