@@ -28,11 +28,12 @@ class Epub:
             self._clone = Path(temp_dir) / self._path.name
             shutil.copy2(self._path, self._clone)
             log.debug(f"Cloning EPUB file to: {self._clone.parent}")
-        self._zf = ZipFileR(self._clone if self._clone else self._path, mode="a")
+        self._zf = ZipFileR(self.path, mode="a")
 
     def __repr__(self):
         return f'Epub("{self._path.name}")'
 
+    @property
     def path(self) -> Path:
         return self._clone or self._path
 
