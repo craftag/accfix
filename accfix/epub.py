@@ -1,10 +1,13 @@
 """Module for handling EPUB files"""
 
+from functools import cache
+
 from loguru import logger as log
 from pathlib import Path
 import shutil
 import tempfile
 from accfix.zfile import ZipFileR
+from lxml import etree
 
 
 class Epub:
@@ -30,6 +33,17 @@ class Epub:
 
     def __repr__(self):
         return f'Epub("{self._path.name}")'
+
+    @cache
+    def opf_path(self) -> Path:
+        """Determine OPF-File path within epub archive"""
+        with self._zf.open("META-INF/container.xml", "r") as f:
+            xml_data = f.read()
+        tree = etree.fromstring(xml_data)
+        namespace = {"ns": "urn:oasis:names:tc:opendocument:xmlns:container"}
+        rootfile_element = tree.find(".//ns:rootfiles/ns:rootfile", namespaces=namespace)
+        result = rootfile_element.attrib["full-path"]
+        return Path(result)
 
     def read(self, path):
         # type: (str|Path) -> bytes
@@ -63,11 +77,12 @@ class Epub:
 if __name__ == "__main__":
     epb = Epub("../scratch/test1_fix.epub")
     mtc = epb.read("mimetype")
-    print(mtc)
-    epb.write("mimetype", mtc)
+    # print(mtc)
+    # epb.write("mimetype", mtc)
     c = epb.read("OEBPS/cover.xhtml")
     print(type(c))
     c = epb.read("OEBPS/images/cover.jpg")
     print(type(c))
     c = epb.read(Path("OEBPS/images/cover.jpg"))
     print(type(c))
+    print(epb.opf_path().as_posix())

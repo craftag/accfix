@@ -7,12 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-lxml = "^5.2.2"
-lingua-language-detector = "^2.0.2"
-streamlit = "^1.35.0"
-loguru = "^0.7.2"
-ansi2html = "^1.9.1"
-fsspec = "^2024.6.0"
+lxml = "^5.2"
+lingua-language-detector = "^2.0"
+streamlit = "^1.35"
+loguru = "^0.7"
+ansi2html = "^1.9"
+fsspec = "^2024.6"
 
 
 [tool.poetry.group.dev.dependencies]
