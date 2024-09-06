@@ -1,7 +1,7 @@
 """Module for handling EPUB files"""
 
 from functools import cache
-from typing import List
+from typing import List, Optional
 from loguru import logger as log
 from pathlib import Path
 import shutil
@@ -42,6 +42,36 @@ class Epub:
         rootfile_element = tree.find(".//ns:rootfiles/ns:rootfile", namespaces=namespace)
         result = rootfile_element.attrib["full-path"]
         return Path(result)
+
+    def nav_path(self) -> Optional[Path]:
+        """Determine nav-File path within epub archive"""
+        opf_content = self.read(self.opf_path())
+        tree = etree.fromstring(opf_content)
+
+        # Define namespaces
+        namespaces = {
+            "opf": "http://www.idpf.org/2007/opf",
+        }
+
+        # Find the item with properties="nav"
+        nav_item = tree.xpath("//opf:manifest/opf:item[@properties='nav']", namespaces=namespaces)
+
+        if not nav_item:
+            log.warning("No nav item found in the EPUB manifest")
+            return None
+
+        if len(nav_item) > 1:
+            log.warning("Multiple nav items found in the EPUB manifest. Using the first one.")
+
+        # Get the href of the nav item
+        nav_href = nav_item[0].get("href")
+
+        # Combine the OPF directory with the href to get the full relative path
+        opf_dir = self.opf_path().parent
+        full_path = opf_dir / nav_href
+
+        # Normalize the path to remove any '..' components
+        return Path(full_path.as_posix())
 
     def read(self, path):
         # type: (str|Path) -> bytes
@@ -114,6 +144,7 @@ class Epub:
 if __name__ == "__main__":
     epb = Epub("../scratch/test1_fix.epub")
     print(f"OPF path: {epb.opf_path()}")
+    print(f"Nav path: {epb.nav_path()}")
 
     print("\nTesting pages() method:")
     for page in epb.pages():
