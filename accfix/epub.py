@@ -46,7 +46,7 @@ class Epub:
 
     def opf_tree(self) -> ElementTree:
         """Return parsed ElementTree of OPF-File"""
-        return etree.fromstring(self.read(self.opf_path()))
+        return etree.ElementTree(etree.fromstring(self.read(self.opf_path())))
 
     def nav_path(self) -> Optional[Path]:
         """Determine nav-File path within epub archive"""
@@ -80,7 +80,7 @@ class Epub:
 
     def nav_tree(self) -> ElementTree:
         """Return parsed ElementTree of OPF-File"""
-        return etree.parse(self.read(self.nav_path()))
+        return etree.ElementTree(etree.fromstring(self.read(self.nav_path())))
 
     def read(self, path):
         # type: (str|Path) -> bytes
