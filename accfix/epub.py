@@ -8,6 +8,7 @@ import shutil
 import tempfile
 from accfix.zfile import ZipFileR
 from lxml import etree
+from lxml.etree import ElementTree
 
 
 class Epub:
@@ -43,6 +44,10 @@ class Epub:
         result = rootfile_element.attrib["full-path"]
         return Path(result)
 
+    def opf_tree(self) -> ElementTree:
+        """Return parsed ElementTree of OPF-File"""
+        return etree.fromstring(self.read(self.opf_path()))
+
     def nav_path(self) -> Optional[Path]:
         """Determine nav-File path within epub archive"""
         opf_content = self.read(self.opf_path())
@@ -72,6 +77,10 @@ class Epub:
 
         # Normalize the path to remove any '..' components
         return Path(full_path.as_posix())
+
+    def nav_tree(self) -> ElementTree:
+        """Return parsed ElementTree of OPF-File"""
+        return etree.parse(self.read(self.nav_path()))
 
     def read(self, path):
         # type: (str|Path) -> bytes
