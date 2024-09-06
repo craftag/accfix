@@ -1,14 +1,11 @@
 import streamlit as st
 import tempfile
 import os
+from loguru import logger as log
 from accfix.epub import Epub
 from accfix.lang import detect_epub_lang
 from accfix.ace_fix import ace_fix_mec
-import logging
 import shutil
-
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
 
 
 def save_uploaded_file(uploaded_file):
@@ -31,7 +28,7 @@ def offer_download(fixed_epub, original_filename):
         shutil.copy2(fixed_epub.path, tmp_file.name)
 
         # Log file size for debugging
-        logger.debug(f"Fixed EPUB size: {os.path.getsize(tmp_file.name)} bytes")
+        log.debug(f"Fixed EPUB size: {os.path.getsize(tmp_file.name)} bytes")
 
         # Read the temporary file
         with open(tmp_file.name, "rb") as file:
@@ -52,18 +49,18 @@ def offer_download(fixed_epub, original_filename):
 def cleanup(tmp_file_path, epub):
     try:
         os.unlink(tmp_file_path)
-        logger.info(f"Temporary file {tmp_file_path} deleted successfully")
+        log.info(f"Temporary file {tmp_file_path} deleted successfully")
     except Exception as e:
-        logger.warning(f"Failed to delete temporary file {tmp_file_path}: {str(e)}")
+        log.warning(f"Failed to delete temporary file {tmp_file_path}: {str(e)}")
 
     if hasattr(epub, "_clone") and epub._clone:
         try:
             os.unlink(epub._clone)
-            logger.info(f"Cloned file {epub._clone} deleted successfully")
+            log.info(f"Cloned file {epub._clone} deleted successfully")
             os.rmdir(os.path.dirname(epub._clone))
-            logger.info(f"Temporary directory {os.path.dirname(epub._clone)} deleted successfully")
+            log.info(f"Temporary directory {os.path.dirname(epub._clone)} deleted successfully")
         except Exception as e:
-            logger.warning(f"Failed to delete cloned file or directory: {str(e)}")
+            log.warning(f"Failed to delete cloned file or directory: {str(e)}")
 
 
 def main():
@@ -88,7 +85,7 @@ def main():
 
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
-            logger.exception("Error during EPUB processing")
+            log.exception("Error during EPUB processing")
 
         finally:
             if epub:
