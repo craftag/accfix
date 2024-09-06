@@ -1,13 +1,8 @@
 from pathlib import Path
 import zipfile
-from typing import Optional
-from lingua import LanguageDetectorBuilder
 from lxml import etree
 from subprocess import run
 import json
-
-
-detector = LanguageDetectorBuilder.from_all_languages().with_low_accuracy_mode().build()
 
 
 def is_epub(fp: str | Path) -> bool:
@@ -52,14 +47,6 @@ def xml_text(xml: etree._Element) -> str | None:
     """Extract plaintext content from XML tree"""
     content = [t.strip() for t in xml.xpath("//text()") if t.strip()]
     return "\n".join(content)
-
-
-def detect_lang(text: str) -> Optional[str]:
-    """Detect language of text and return ISO 639-1 code"""
-    detected_language = detector.detect_language_of(text)
-    if not detected_language:
-        return
-    return detected_language.iso_code_639_1.name.lower()
 
 
 def check(fp: str | Path) -> dict:
