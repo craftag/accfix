@@ -10,30 +10,6 @@ ace_path = Path(shutil.which("ace"))
 ansi_escape = re.compile(r"\x1B[@-_][0-?]*[ -/]*[@-~]")
 
 
-def check_epub(fp):
-    # Run the ace command with subprocess.Popen
-    fp = Path(fp)
-    report_dir = fp.parent / f"{fp.stem}_report"
-    report_dir.mkdir(exist_ok=True)
-    report_file = report_dir / "report.json"
-
-    # Run ACE Check
-    cmd = [ace_path, "-f", "-o", report_dir, fp]
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-
-    log_output = []
-    for line in process.stdout:
-        stripped_line = ansi_escape.sub("", line).strip()
-        log.info(stripped_line)
-        log_output.append(line)
-        yield stripped_line
-
-    process.wait()
-    if process.returncode != 0:
-        log_output.append(f"Ace command failed with return code {process.returncode}")
-        yield f"Ace command failed with return code {process.returncode}"
-
-
 def main():
     st.title("EPUB Accessibility Fixer")
     uploaded_file = st.file_uploader("Upload an EPUB file", type=["epub"])
