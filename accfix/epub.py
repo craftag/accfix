@@ -30,6 +30,14 @@ class Epub:
             log.debug(f"Cloning EPUB file to: {self._clone.parent}")
         self._zf = ZipFileR(self.path, mode="a")
 
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        if hasattr(self, "_zf") and self._zf is not None:
+            self._zf.close()
+            self._zf = None
+
     def __repr__(self):
         return f'Epub("{self._path.name}")'
 
