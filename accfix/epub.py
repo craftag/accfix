@@ -1,7 +1,6 @@
 """Module for handling EPUB files"""
 
 from functools import cache
-
 from loguru import logger as log
 from pathlib import Path
 import shutil
@@ -13,9 +12,7 @@ from lxml import etree
 class Epub:
     def __init__(self, path, clone=True):
         # type: (str|Path, bool) -> Epub
-        """Opens a EPUB file for reading and writing.
-
-        Wraps the epub file in a fsspec zip filesystem for easy access.
+        """EPUB file object for reading and writing members.
 
         :param path: Path to the EPUB file.
         :param clone: Create a temporary copy of the EPUB file and open that one.
@@ -53,7 +50,7 @@ class Epub:
         :return: The content of the file.
         """
         path = Path(path)
-        log.debug(f"Reading: {self.name}/{path}")
+        log.debug(f"Reading: {self.name}/{path.as_posix()}")
         with self._zf.open(path.as_posix()) as file:
             return file.read()
 

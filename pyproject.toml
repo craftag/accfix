@@ -12,8 +12,6 @@ lingua-language-detector = "^2.0"
 streamlit = "^1.35"
 loguru = "^0.7"
 ansi2html = "^1.9"
-fsspec = "^2024.6"
-
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3"
@@ -24,8 +22,8 @@ line-length = 100
 
 [tool.poe.tasks]
 format-code = { cmd = "poetry run ruff format", help = "Code style formating with ruff" }
-all = ["format-code"]
-
+convert-lf = { script = "accfix.dev:convert_lf", help = "Convert line endings to LF"}
+all = ["format-code", "convert-lf"]
 
 [build-system]
 requires = ["poetry-core"]
