@@ -1,13 +1,5 @@
-from pathlib import Path
-from loguru import logger as log
 import streamlit as st
 import tempfile
-import subprocess
-import shutil
-import re
-
-ace_path = Path(shutil.which("ace"))
-ansi_escape = re.compile(r"\x1B[@-_][0-?]*[ -/]*[@-~]")
 
 
 def main():

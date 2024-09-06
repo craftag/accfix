@@ -1,6 +1,7 @@
 """Module for handling EPUB files"""
 
 from functools import cache
+from typing import List
 from loguru import logger as log
 from pathlib import Path
 import shutil
@@ -70,16 +71,50 @@ class Epub:
         with self._zf.open(path.as_posix(), "w") as file:
             file.write(data)
 
+    def pages(self):
+        # type: () -> List[Path]
+        """Return a list of paths to epub pages.
+
+        Reads all <spine> elements and resolves them to the actual file paths.
+        """
+        opf_content = self.read(self.opf_path())
+        tree = etree.fromstring(opf_content)
+
+        # Define namespaces
+        namespaces = {
+            "opf": "http://www.idpf.org/2007/opf",
+            "dc": "http://purl.org/dc/elements/1.1/",
+        }
+
+        # Get the spine elements
+        spine_elements = tree.xpath("//opf:spine/opf:itemref", namespaces=namespaces)
+
+        # Get the manifest elements
+        manifest_elements = tree.xpath("//opf:manifest/opf:item", namespaces=namespaces)
+
+        # Create a dictionary to map ids to hrefs
+        id_to_href = {item.get("id"): item.get("href") for item in manifest_elements}
+
+        # Get the paths for each spine item
+        page_paths = []
+        opf_dir = self.opf_path().parent
+        for itemref in spine_elements:
+            idref = itemref.get("idref")
+            if idref in id_to_href:
+                href = id_to_href[idref]
+                # Combine the OPF directory with the href to get the full relative path
+                full_path = opf_dir / href
+                # Normalize the path to remove any '..' components
+                full_path = Path(full_path.as_posix())
+                page_paths.append(full_path)
+
+        return page_paths
+
 
 if __name__ == "__main__":
     epb = Epub("../scratch/test1_fix.epub")
-    mtc = epb.read("mimetype")
-    # print(mtc)
-    # epb.write("mimetype", mtc)
-    c = epb.read("OEBPS/cover.xhtml")
-    print(type(c))
-    c = epb.read("OEBPS/images/cover.jpg")
-    print(type(c))
-    c = epb.read(Path("OEBPS/images/cover.jpg"))
-    print(type(c))
-    print(epb.opf_path().as_posix())
+    print(f"OPF path: {epb.opf_path()}")
+
+    print("\nTesting pages() method:")
+    for page in epb.pages():
+        print(f"Page: {page}")

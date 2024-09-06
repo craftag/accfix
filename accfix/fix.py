@@ -22,17 +22,8 @@ def find_opf(zip_file: zipfile.ZipFile) -> str:
     return opf_path
 
 
-# def modify_opf(zip_file: zipfile.ZipFile, opf_path: str) -> bytes:
-#     """Modify the opf file to add xml:lang="en" to the package element."""
-#     with zip_file.open(opf_path) as opf_file:
-#         opf_tree = etree.parse(opf_file)
-#         package_element = opf_tree.getroot()
-#         package_element.set("{http://www.w3.org/XML/1998/namespace}lang", "en")
-#         return etree.tostring(opf_tree, xml_declaration=True, encoding='utf-8', pretty_print=True)
-
-
-def modify_opf(zip_file: zipfile.ZipFile, opf_path: str) -> bytes:
-    """Modify the opf file to add xml:lang="en" to the package element and insert new meta elements."""
+def fix_opf(zip_file: zipfile.ZipFile, opf_path: str) -> bytes:
+    """Fix opf file by addding xml:lang="en" and inserting new static meta elements."""
     with zip_file.open(opf_path) as opf_file:
         opf_tree = etree.parse(opf_file)
         package_element = opf_tree.getroot()
@@ -151,7 +142,7 @@ def fix_epub(file_path: str) -> None:
 
     with zipfile.ZipFile(new_file_path, "r") as zip_file:
         opf_path = find_opf(zip_file)
-        new_opf_content = modify_opf(zip_file, opf_path)
+        new_opf_content = fix_opf(zip_file, opf_path)
 
     update_epub(new_file_path, opf_path, new_opf_content)
     fix_attributes(new_file_path)
