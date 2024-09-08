@@ -24,21 +24,6 @@ dev = ["geopandas", "hatch", "ibis-framework[polars]", "ipython[kernel]", "mistu
 doc = ["docutils", "jinja2", "myst-parser", "numpydoc", "pillow (>=9,<10)", "pydata-sphinx-theme (>=0.14.1)", "scipy", "sphinx", "sphinx-copybutton", "sphinx-design", "sphinxext-altair"]
 
 [[package]]
-name = "ansi2html"
-version = "1.9.2"
-description = "Convert text with ANSI color codes to HTML or to LaTeX"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "ansi2html-1.9.2-py3-none-any.whl", hash = "sha256:dccb75aa95fb018e5d299be2b45f802952377abfdce0504c17a6ee6ef0a420c5"},
-    {file = "ansi2html-1.9.2.tar.gz", hash = "sha256:3453bf87535d37b827b05245faaa756dbab4ec3d69925e352b6319c3c955c0a5"},
-]
-
-[package.extras]
-docs = ["mkdocs", "mkdocs-material", "mkdocs-material-extensions", "mkdocstrings", "mkdocstrings-python", "pymdown-extensions"]
-test = ["pytest", "pytest-cov"]
-
-[[package]]
 name = "attrs"
 version = "24.2.0"
 description = "Classes Without Boilerplate"
@@ -1499,4 +1484,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8a840ed20d64d1e0013f52a214f780e9eab9e1cdff282121ff6091822e9efbca"
+content-hash = "bc5cae0e6352f23c1f89cd53780866b149a9d83947b9967013af9753d6304357"
