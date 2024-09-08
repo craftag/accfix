@@ -68,6 +68,9 @@ def offer_download(fixed_epub, original_filename):
         with open(tmp_file.name, "rb") as file:
             fixed_epub_bytes = file.read()
 
+        # Add vertical space before the download button
+        st.markdown("<br>", unsafe_allow_html=True)
+
         # Offer download
         st.download_button(
             label="Download Fixed EPUB",
