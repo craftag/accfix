@@ -13,6 +13,7 @@ def ace_fix_mec(epub: Epub):
     opf_tree = epub.opf_tree()
     set_lang(opf_tree, lang)
     add_acc_meta_fxl(opf_tree)
+    etree.indent(opf_tree, space="  ")  # Ensure proper indentation
     data = etree.tostring(opf_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
     epub.write(epub.opf_path(), data)
 
