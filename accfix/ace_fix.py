@@ -10,31 +10,42 @@ from accfix.lang import detect_epub_lang
 def ace_fix_mec(epub: Epub):
     """Static fixing of Accessibility for MagicEpub Fixed Layout EPUBs"""
     lang = detect_epub_lang(epub)
+    yield f"Detected language: {lang}"
 
     # Fix OPF
+    yield "Fixing OPF..."
     opf_tree = epub.opf_tree()
     set_lang(opf_tree, lang)
+    yield "Adding accessibility metadata..."
     for message in add_acc_meta_fxl(opf_tree):
-        log.debug(message)
+        yield message
     etree.indent(opf_tree, space="  ")  # Ensure proper indentation
     data = etree.tostring(opf_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
     epub.write(epub.opf_path(), data)
+    yield "OPF fixed and updated"
 
     # Fix NAV
+    yield "Fixing NAV..."
     nav_tree = epub.nav_tree()
     fix_nav(nav_tree)
     set_lang(nav_tree, lang)
     data = etree.tostring(nav_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
     epub.write(epub.nav_path(), data)
+    yield "NAV fixed and updated"
 
     # Fix CONTENT
-    for page_path in epub.pages():
+    yield "Fixing content pages..."
+    for i, page_path in enumerate(epub.pages(), 1):
+        yield f"Processing page {i}..."
         data = epub.read(page_path)
         html_tree = ElementTree(etree.fromstring(data))
         set_lang(html_tree, lang)
         fix_trn_links(html_tree)
         data = etree.tostring(html_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
         epub.write(page_path, data)
+    yield "All content pages fixed and updated"
+
+    yield "Accessibility fixes completed successfully!"
     return epub
 
 

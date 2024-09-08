@@ -15,10 +15,25 @@ def save_uploaded_file(uploaded_file):
 
 
 def apply_accessibility_fixes(epub):
-    with st.spinner("Applying accessibility fixes..."):
-        fixed_epub = ace_fix_mec(epub)
-    st.success("Accessibility fixes applied successfully!")
-    return fixed_epub
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    messages = []
+
+    for i, message in enumerate(ace_fix_mec(epub), 1):
+        messages.append(message)
+        status_text.text(message)
+        progress = min(i / 10, 1.0)  # Assuming about 10 main steps
+        progress_bar.progress(progress)
+
+    progress_bar.progress(1.0)
+    status_text.text("Accessibility fixes completed successfully!")
+
+    # Display all messages in a scrollable area
+    with st.expander("Show all messages", expanded=True):
+        for msg in messages:
+            st.write(msg)
+
+    return epub
 
 
 def offer_download(fixed_epub, original_filename):
