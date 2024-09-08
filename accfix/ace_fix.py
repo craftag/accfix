@@ -1,3 +1,4 @@
+from loguru import logger as log
 from lxml.etree import ElementTree
 from lxml import etree
 from accfix.epub import Epub
@@ -43,7 +44,7 @@ def set_lang(tree, lang):
 
 def add_acc_meta_fxl(opf_tree):
     # type: (ElementTree) -> ElementTree
-    """Add default Fixed Layout metadata required by ACE"""
+    """Update or add default Fixed Layout metadata required by ACE"""
     root = opf_tree.getroot()
     metadata_element = root.find(".//{http://www.idpf.org/2007/opf}metadata")
 
@@ -61,9 +62,14 @@ def add_acc_meta_fxl(opf_tree):
     ]
 
     for property_value, text_value in meta_elements:
-        new_meta = etree.Element("meta", property=property_value)
-        new_meta.text = text_value
-        metadata_element.append(new_meta)
+        existing_metas = metadata_element.findall(f".//meta[@property='{property_value}']")
+        if not any(existing_meta.text == text_value for existing_meta in existing_metas):
+            new_meta = etree.Element("meta", property=property_value)
+            new_meta.text = text_value
+            metadata_element.append(new_meta)
+            log.debug(f"Add {property_value} -> {text_value}")
+        else:
+            log.debug(f"Skip {property_value} -> {text_value}")
 
     return opf_tree
 
