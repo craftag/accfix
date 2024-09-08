@@ -26,9 +26,10 @@ def apply_accessibility_fixes(epub):
         .scrollable-container {
             height: 200px;
             overflow-y: auto;
-            border: 1px solid #ccc;
+            border: 1px solid var(--text-color);
             padding: 10px;
-            background-color: #f0f0f0;
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
         </style>
         """,
