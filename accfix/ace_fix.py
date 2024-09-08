@@ -1,3 +1,5 @@
+from typing import Generator
+
 from loguru import logger as log
 from lxml.etree import ElementTree
 from lxml import etree
@@ -12,7 +14,8 @@ def ace_fix_mec(epub: Epub):
     # Fix OPF
     opf_tree = epub.opf_tree()
     set_lang(opf_tree, lang)
-    add_acc_meta_fxl(opf_tree)
+    for message in add_acc_meta_fxl(opf_tree):
+        log.debug(message)
     etree.indent(opf_tree, space="  ")  # Ensure proper indentation
     data = etree.tostring(opf_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
     epub.write(epub.opf_path(), data)
@@ -44,7 +47,7 @@ def set_lang(tree, lang):
 
 
 def add_acc_meta_fxl(opf_tree):
-    # type: (ElementTree) -> ElementTree
+    # type: (ElementTree) -> Generator[str, None, None]
     """Update or add default Fixed Layout metadata required by ACE"""
     root = opf_tree.getroot()
     namespaces = {"opf": "http://www.idpf.org/2007/opf"}
@@ -73,11 +76,9 @@ def add_acc_meta_fxl(opf_tree):
             new_meta = etree.Element(f"{{{namespaces['opf']}}}meta", property=property_value)
             new_meta.text = text_value
             metadata_element.append(new_meta)
-            log.debug(f"Add {property_value} -> {text_value}")
+            yield f"Add {property_value} -> {text_value}"
         else:
-            log.debug(f"Skip {property_value} -> {text_value}")
-
-    return opf_tree
+            yield f"Skip {property_value} -> {text_value}"
 
 
 def fix_nav(nav_tree):
@@ -118,4 +119,5 @@ def fix_trn_links(html_tree):
 if __name__ == "__main__":
     fp = r"../scratch/test1.epub"
     epb = Epub(fp, clone=True)
-    add_acc_meta_fxl(epb.opf_tree())
+    for message in add_acc_meta_fxl(epb.opf_tree()):
+        print(message)
