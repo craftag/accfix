@@ -17,21 +17,39 @@ def save_uploaded_file(uploaded_file):
 def apply_accessibility_fixes(epub):
     progress_bar = st.progress(0)
     status_text = st.empty()
+
+    # Create a container with custom CSS for scrolling
+    message_container = st.container()
+    message_container.markdown(
+        """
+        <style>
+        .scrollable-container {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    message_area = message_container.empty()
+
     messages = []
 
     for i, message in enumerate(ace_fix_mec(epub), 1):
-        messages.append(message)
+        messages.insert(0, message)  # Prepend new messages
         status_text.text(message)
+        message_area.markdown(
+            f'<div class="scrollable-container">{"<br>".join(messages)}</div>',
+            unsafe_allow_html=True,
+        )
         progress = min(i / 10, 1.0)  # Assuming about 10 main steps
         progress_bar.progress(progress)
 
     progress_bar.progress(1.0)
     status_text.text("Accessibility fixes completed successfully!")
-
-    # Display all messages in a scrollable area
-    with st.expander("Show all messages", expanded=True):
-        for msg in messages:
-            st.write(msg)
 
     return epub
 
