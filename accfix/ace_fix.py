@@ -47,7 +47,8 @@ def add_acc_meta_fxl(opf_tree):
     # type: (ElementTree) -> ElementTree
     """Update or add default Fixed Layout metadata required by ACE"""
     root = opf_tree.getroot()
-    metadata_element = root.find(".//{http://www.idpf.org/2007/opf}metadata")
+    namespaces = {"opf": "http://www.idpf.org/2007/opf"}
+    metadata_element = root.find(".//opf:metadata", namespaces=namespaces)
 
     meta_elements = [
         ("schema:accessMode", "textual"),
@@ -63,9 +64,13 @@ def add_acc_meta_fxl(opf_tree):
     ]
 
     for property_value, text_value in meta_elements:
-        existing_metas = metadata_element.findall(f".//meta[@property='{property_value}']")
-        if not any(existing_meta.text == text_value for existing_meta in existing_metas):
-            new_meta = etree.Element("meta", property=property_value)
+        existing_meta = metadata_element.xpath(
+            f".//opf:meta[@property='{property_value}' and text()='{text_value}']",
+            namespaces=namespaces,
+        )
+
+        if not existing_meta:
+            new_meta = etree.Element(f"{{{namespaces['opf']}}}meta", property=property_value)
             new_meta.text = text_value
             metadata_element.append(new_meta)
             log.debug(f"Add {property_value} -> {text_value}")
@@ -113,4 +118,4 @@ def fix_trn_links(html_tree):
 if __name__ == "__main__":
     fp = r"../scratch/test1.epub"
     epb = Epub(fp, clone=True)
-    ace_fix_mec(epub=epb)
+    add_acc_meta_fxl(epb.opf_tree())
