@@ -10,7 +10,7 @@ def ace_fix_mec(epub: Epub):
 
     # Fix OPF
     opf_tree = epub.opf_tree()
-    opf_add_lang(opf_tree, lang)
+    set_lang(opf_tree, lang)
     add_acc_meta_fxl(opf_tree)
     data = etree.tostring(opf_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
     epub.write(epub.opf_path(), data)
@@ -18,7 +18,7 @@ def ace_fix_mec(epub: Epub):
     # Fix NAV
     nav_tree = epub.nav_tree()
     fix_nav(nav_tree)
-    html_set_lang(nav_tree, lang)
+    set_lang(nav_tree, lang)
     data = etree.tostring(nav_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
     epub.write(epub.nav_path(), data)
 
@@ -26,19 +26,19 @@ def ace_fix_mec(epub: Epub):
     for page_path in epub.pages():
         data = epub.read(page_path)
         html_tree = ElementTree(etree.fromstring(data))
-        html_set_lang(html_tree, lang)
+        set_lang(html_tree, lang)
         fix_trn_links(html_tree)
         data = etree.tostring(html_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
         epub.write(page_path, data)
     return epub
 
 
-def opf_add_lang(opf_tree, lang):
+def set_lang(tree, lang):
     # type: (ElementTree, str) -> ElementTree
-    """Add language to OPF tree"""
-    root = opf_tree.getroot()
+    """Set language for page"""
+    root = tree.getroot()
     root.set("{http://www.w3.org/XML/1998/namespace}lang", lang)
-    return opf_tree
+    return tree
 
 
 def add_acc_meta_fxl(opf_tree):
@@ -87,15 +87,6 @@ def fix_nav(nav_tree):
         a_element.set("role", "link")
         a_element.set("aria-label", "Start reading")
     return nav_tree
-
-
-def html_set_lang(html_tree, lang):
-    # type: (ElementTree, str) -> ElementTree
-    """Set language for page"""
-    root = html_tree.getroot()
-    root.set("lang", lang)
-    root.set("{http://www.w3.org/XML/1998/namespace}lang", lang)
-    return html_tree
 
 
 def fix_trn_links(html_tree):
