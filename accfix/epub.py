@@ -102,7 +102,7 @@ class Epub:
         :return: The content of the file.
         """
         path = Path(path)
-        log.debug(f"Reading: {self.name}/{path.as_posix()}")
+        log.trace(f"Reading: {self.name}/{path.as_posix()}")
         with self._zf.open(path.as_posix()) as file:
             return file.read()
 
@@ -114,7 +114,7 @@ class Epub:
         :param data: The data to write to the file.
         """
         path = Path(path)
-        log.debug(f"Writing: {self.name}/{path}")
+        log.trace(f"Writing: {self.name}/{path}")
         try:
             self._zf.remove(path.as_posix())
         except KeyError:
