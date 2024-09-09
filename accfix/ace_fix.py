@@ -41,6 +41,7 @@ def ace_fix_mec(epub: Epub):
         html_tree = ElementTree(etree.fromstring(data))
         set_lang(html_tree, lang)
         fix_trn_links(html_tree)
+        fix_hotspot_links_kf8(html_tree)
         data = etree.tostring(html_tree, xml_declaration=True, encoding="utf-8", pretty_print=True)
         epub.write(page_path, data)
     yield "All content pages fixed and updated"
@@ -124,6 +125,22 @@ def fix_trn_links(html_tree):
     trn_links = root.xpath('//xhtml:a[@class="trn_link"]', namespaces=namespaces)
     for el in trn_links:
         el.set("title", "Link area")
+    return html_tree
+
+
+def fix_hotspot_links_kf8(html_tree):
+    # type: (ElementTree) -> ElementTree
+    """Add required title attribute to MagicEpub hotspot link elements"""
+    root = html_tree.getroot()
+    namespaces = {
+        "xhtml": "http://www.w3.org/1999/xhtml",
+        "epub": "http://www.idpf.org/2007/ops",
+    }
+    hot_spot_divs = root.xpath('//xhtml:div[@class="hotspot"]', namespaces=namespaces)
+    for div in hot_spot_divs:
+        link = div.find(".//xhtml:a", namespaces=namespaces)
+        if link is not None:
+            link.set("title", "Link area")
     return html_tree
 
 
