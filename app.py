@@ -6,6 +6,12 @@ from accfix.epub import Epub
 from accfix.lang import detect_epub_lang
 from accfix.ace_fix import ace_fix_mec
 import shutil
+import telegram
+from telegram.error import TelegramError
+import asyncio
+import dotenv
+
+dotenv.load_dotenv()
 
 
 def save_uploaded_file(uploaded_file):
@@ -100,6 +106,26 @@ def cleanup(tmp_file_path, epub):
             log.warning(f"Failed to delete cloned file or directory: {str(e)}")
 
 
+async def send_telegram_notification(message, file_path=None):
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+
+    bot = telegram.Bot(token=bot_token)
+
+    try:
+        if file_path:
+            with open(file_path, "rb") as file:
+                await bot.send_document(chat_id=chat_id, document=file, caption=message)
+        else:
+            await bot.send_message(chat_id=chat_id, text=message)
+    except TelegramError as e:
+        log.error(f"Failed to send Telegram notification: {e}")
+
+
+def send_telegram_notification_sync(message, file_path=None):
+    asyncio.run(send_telegram_notification(message, file_path))
+
+
 def main():
     st.title("EPUB Accessibility Fixer (Beta)")
     st.subheader("For Fixed Layout EPUBs from [MagicEPUB](https://magicepub.com)")
@@ -120,10 +146,16 @@ def main():
             if st.button("Fix Accessibility"):
                 fixed_epub = apply_accessibility_fixes(epub)
                 offer_download(fixed_epub, uploaded_file.name)
+                send_telegram_notification_sync(
+                    f"File processed successfully: {uploaded_file.name}"
+                )
 
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
             log.exception("Error during EPUB processing")
+            send_telegram_notification_sync(
+                f"Error processing file: {uploaded_file.name}\n\nError: {str(e)}", tmp_file_path
+            )
 
         finally:
             if epub:

@@ -11,6 +11,8 @@ lxml = "^5.2"
 lingua-language-detector = "^2.0"
 streamlit = "^1.35"
 loguru = "^0.7"
+python-telegram-bot = "^21.5"
+python-dotenv = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3"
