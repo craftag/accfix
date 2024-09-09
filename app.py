@@ -101,7 +101,7 @@ def cleanup(tmp_file_path, epub):
 
 
 def main():
-    st.title("EPUB Accessibility Fixer")
+    st.title("EPUB Accessibility Fixer (Beta)")
     st.subheader("For Fixed Layout EPUBs from [MagicEPUB](https://magicepub.com)")
     uploaded_file = st.file_uploader("Upload an EPUB file", type=["epub"])
 
