@@ -62,7 +62,10 @@ def add_acc_meta_fxl(opf_tree):
     # type: (ElementTree) -> Generator[str, None, None]
     """Update or add default Fixed Layout metadata required by ACE"""
     root = opf_tree.getroot()
-    namespaces = {"opf": "http://www.idpf.org/2007/opf"}
+    namespaces = {
+        "opf": "http://www.idpf.org/2007/opf",
+        "tdm": "http://www.w3.org/ns/tdmrep#",
+    }
     metadata_element = root.find(".//opf:metadata", namespaces=namespaces)
 
     meta_elements = [
@@ -76,6 +79,7 @@ def add_acc_meta_fxl(opf_tree):
             "schema:accessibilitySummary",
             "Fixed Layout with html text placed over background images.",
         ),
+        ("tdm:reservation", "1"),
     ]
 
     for property_value, text_value in meta_elements:
@@ -146,6 +150,7 @@ def fix_hotspot_links_kf8(html_tree):
 
 if __name__ == "__main__":
     fp = r"../scratch/test1.epub"
-    epb = Epub(fp, clone=True)
-    for message in add_acc_meta_fxl(epb.opf_tree()):
+    cp = "../scratch/test1_clone.epub"
+    epb = Epub(fp, clone=True, clone_path="../scratch/test1_clone.epub")
+    for message in ace_fix_mec(epb):
         print(message)

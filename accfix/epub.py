@@ -12,22 +12,26 @@ from lxml.etree import ElementTree
 
 
 class Epub:
-    def __init__(self, path, clone=True):
-        # type: (str|Path, bool) -> None
+    def __init__(self, path, clone=True, clone_path=None):
+        # type: (str|Path, bool, str|Path|None) -> None
         """EPUB file object for reading and writing members.
 
         :param path: Path to the EPUB file.
-        :param clone: Create a temporary copy of the EPUB file and open that one.
+        :param clone: Create a (temporary) copy of the EPUB file and open that one.
+        :param clone_path: Custom file path for the cloned EPUB file.
         """
         self._path = Path(path)
         self.name = self._path.name
         log.debug("Opening EPUB file: {name}".format(name=self._path.name))
         self._clone = None
         if clone:
-            temp_dir = tempfile.mkdtemp()
-            self._clone = Path(temp_dir) / self._path.name
+            if clone_path:
+                self._clone = Path(clone_path)
+            else:
+                temp_dir = tempfile.mkdtemp()
+                self._clone = Path(temp_dir) / self._path.name
             shutil.copy2(self._path, self._clone)
-            log.debug(f"Cloning EPUB file to: {self._clone.parent}")
+            log.debug(f"Cloning EPUB file to: {self._clone}")
         self._zf = ZipFileR(self.path, mode="a")
 
     def __del__(self):
