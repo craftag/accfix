@@ -66,6 +66,17 @@ def add_acc_meta_fxl(opf_tree):
         "opf": "http://www.idpf.org/2007/opf",
         "tdm": "http://www.w3.org/ns/tdmrep#",
     }
+
+    # Add tdm prefix to package element if not present
+    prefix = root.get("prefix", "")
+    if "tdm: http://www.w3.org/ns/tdmrep#" not in prefix:
+        if prefix:
+            prefix += " tdm: http://www.w3.org/ns/tdmrep#"
+        else:
+            prefix = "tdm: http://www.w3.org/ns/tdmrep#"
+        root.set("prefix", prefix)
+        yield "Added tdm prefix to package element"
+
     metadata_element = root.find(".//opf:metadata", namespaces=namespaces)
 
     meta_elements = [
